@@ -32,8 +32,16 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
       },
     },
   },
+
   upload: {
     config: {
+      provider: '@strapi-community/strapi-provider-upload-google-cloud-storage',
+
+      providerOptions: {
+        bucketName: env('GCS_BUCKET_NAME'),
+        publicFiles: false,
+      },
+
       security: {
         allowedTypes: allowedMediaTypes,
         deniedTypes,
