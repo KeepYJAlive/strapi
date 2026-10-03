@@ -1,0 +1,16 @@
+services:
+  strapi:
+    image: ghcr.io/keepyjalive/strapi:latest
+    container_name: keepyjalive-strapi
+    restart: unless-stopped
+
+    env_file:
+      - .env
+
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+
+    ports:
+      - "127.0.0.1:1337:1337"
