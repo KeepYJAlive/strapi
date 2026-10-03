@@ -23,31 +23,40 @@ const deniedTypes = [
   'application/x-mach-binary',
 ];
 
-const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => ({
-  'users-permissions': {
-    config: {
-      jwtManagement: 'refresh',
-      sessions: {
-        httpOnly: true,
+const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => {
+  const isProduction = env('NODE_ENV') === 'production';
+
+  return {
+    'users-permissions': {
+      config: {
+        jwtManagement: 'refresh',
+        sessions: {
+          httpOnly: true,
+        },
       },
     },
-  },
 
-  upload: {
-    config: {
-      provider: '@strapi-community/strapi-provider-upload-google-cloud-storage',
+    upload: {
+      config: {
+        ...(isProduction
+          ? {
+              provider:
+                '@strapi-community/strapi-provider-upload-google-cloud-storage',
 
-      providerOptions: {
-        bucketName: env('GCS_BUCKET_NAME'),
-        publicFiles: false,
-      },
+              providerOptions: {
+                bucketName: env('GCS_BUCKET_NAME'),
+                publicFiles: false,
+              },
+            }
+          : {}),
 
-      security: {
-        allowedTypes: allowedMediaTypes,
-        deniedTypes,
+        security: {
+          allowedTypes: allowedMediaTypes,
+          deniedTypes,
+        },
       },
     },
-  },
-});
+  };
+};
 
 export default config;

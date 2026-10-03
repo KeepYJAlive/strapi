@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "homepages",
+  "info": {
+    "singularName": "homepage",
+    "pluralName": "homepages",
+    "displayName": "Homepage"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "heroSlides": {
+      "type": "component",
+      "component": "homepage.hero-slide",
+      "repeatable": true,
+      "required": true
+    },
+    "introduction": {
+      "type": "component",
+      "component": "homepage.introduction",
+      "repeatable": false,
+      "required": true
+    }
+  }
+}

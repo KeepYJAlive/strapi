@@ -1,0 +1,58 @@
+name: Deploy Strapi Production
+
+on:
+  workflow_run:
+    workflows:
+      - "Build Strapi Image"
+    types:
+      - completed
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: strapi-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Production
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.PROD_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.PROD_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy Strapi
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o IdentitiesOnly=yes \
+            "${{ secrets.PROD_USER }}@${{ secrets.PROD_HOST }}" \
+            'cd /opt/keepyjalive/strapi &&
+             git fetch origin main &&
+             git reset --hard origin/main &&
+             docker compose pull strapi &&
+             docker compose up -d --no-build strapi'
+
+      - name: Verify deployment
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS https://cms.keepyjalive.org/_health > /dev/null; then
+              echo "Strapi production deployment is healthy"
+              exit 0
+            fi
+
+            echo "Waiting for Strapi... ($i/30)"
+            sleep 2
+          done
+
+          echo "Strapi production health check failed"
+          exit 1
