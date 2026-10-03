@@ -22,6 +22,16 @@
       "component": "homepage.introduction",
       "repeatable": false,
       "required": true
+    },
+    "featuredArticles": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::article.article"
+    },
+    "featuredEvents": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::event.event"
     }
   }
 }
