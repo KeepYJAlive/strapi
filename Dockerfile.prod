@@ -29,6 +29,7 @@ ENV NODE_ENV=production
 
 RUN npm run build \
     && npm prune --omit=dev \
+    && npx --yes patch-package@8.0.1 \
     && grep -q 'const cleanUrl' \
        node_modules/@strapi-community/strapi-provider-upload-google-cloud-storage/dist/index.js
 
